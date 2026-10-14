@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Werwolf Spielleiter-Bogen</title>
+    <style>
+        :root {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --border-color: #333;
+            --accent-red: #e53935;
+            --text-main: #e0e0e0;
+            --gold: #d4af37;
+            --blue: #3f51b5;
+            --day-yellow: #fbc02d;
+            --heart-pink: #e91e63;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--accent-red);
+            padding-bottom: 10px;
+        }
+
+        .header h1 {
+            color: var(--accent-red);
+            margin: 0;
+            font-family: 'Georgia', serif;
+            letter-spacing: 2px;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 2.2fr 1fr;
+            gap: 20px;
+            max-width: 1500px;
+            margin: 0 auto;
+        }
+
+        @media (max-width: 1024px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .card h2 {
+            color: var(--gold);
+            margin-top: 0;
+            font-size: 1.2rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+            font-family: 'Georgia', serif;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th, td {
+            padding: 8px 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: #282828;
+            color: var(--gold);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+        }
+
+        tr.werewolf input.role-input {
+            color: #ff6b6b;
+            font-weight: bold;
+        }
+
+        tr.is-dead {
+            opacity: 0.4;
+        }
+
+        tr.is-dead input {
+            text-decoration: line-through;
+        }
+
+        input[type="text"], input[type="number"], select {
+            background: #2a2a2a;
+            border: 1px solid var(--border-color);
+            color: #fff;
+            padding: 6px;
+            border-radius: 4px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        select:disabled, input:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            background: #1a1a1a;
+        }
+
+        select, input[type="number"] {
+            margin-bottom: 10px;
+        }
+
+        input[type="checkbox"] {
+            accent-color: var(--accent-red);
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            vertical-align: middle;
+        }
+
+        .btn {
+            background: #2e7d32;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn:hover { background: #1b5e20; }
+
+        .btn-action {
+            width: 100%;
+            padding: 12px;
+            font-size: 1rem;
+            margin-top: 15px;
+            cursor: pointer;
+            font-weight: bold;
+            border: none;
+            border-radius: 4px;
+            color: white;
+        }
+
+        .btn-night { background: var(--blue); }
+        .btn-night:hover { background: #303f9f; }
+
+        .btn-day { background: #f57f17; }
+        .btn-day:hover { background: #e65100; }
+
+        .btn-restart {
+            background: #f57f17;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+        }
+        .btn-restart:hover { background: #e65100; }
+
+        .btn-danger { background: var(--accent-red); }
+        .btn-danger:hover { background: #c62828; }
+
+        .btn-mode {
+            background: #4a148c;
+            color: white;
+            border: 1px solid var(--gold);
+            padding: 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+            margin-bottom: 15px;
+            transition: 0.3s;
+        }
+
+        .btn-mode.active-reveal {
+            background: #2e7d32;
+        }
+
+        .btn-delete {
+            background: transparent;
+            color: #ff6b6b;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1rem;
+        }
+
+        .add-role-box {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-top: 15px;
+            background: #252525;
+            padding: 10px;
+            border-radius: 6px;
+            flex-wrap: wrap;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .phase-box {
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+        }
+
+        .night-box {
+            background: #1a237e22;
+            border: 1px solid var(--blue);
+        }
+
+        .day-box {
+            background: #fbc02d1a;
+            border: 1px solid var(--day-yellow);
+        }
+
+        .script-box {
+            background: #252525;
+            border-left: 4px solid var(--gold);
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            font-style: italic;
+            font-size: 0.95rem;
+            line-height: 1.4;
+            color: #ffd54f;
+        }
+
+        .result-msg {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .result-success { background: #1b5e20; color: #a5d6a7; }
+        .result-dead { background: #b71c1c; color: #ffcdd2; }
+        
+        .info-badge {
+            background: #333;
+            padding: 6px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .nomination-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .lovers-container {
+            display: flex;
+            gap: 10px;
+            margin-top: 5px;
+        }
+
+        .disabled-label {
+            opacity: 0.4;
+            text-decoration: line-through;
+        }
+
+        .game-over-banner {
+            background: linear-gradient(135deg, #b71c1c, #4a148c);
+            border: 2px solid var(--gold);
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .game-over-banner h2 {
+            color: var(--gold);
+            font-size: 1.8rem;
+            margin: 0 0 10px 0;
+            border: none;
+        }
+
+        .game-over-banner p {
+            font-size: 1.2rem;
+            margin: 0;
+            color: #fff;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>🐺 Werwölfe von Düsterwald</h1>
+        <p>Geführter Spielleiter-Bogen mit flexiblen Spielmodi</p>
+    </div>
+
+    <!-- Banner für Spielende -->
+    <div id="game-over-container" style="display: none;"></div>
+
+    <div class="container">
+        <!-- Linke Seite: Spieler & Rollen -->
+        <div class="card">
+            <h2>Rollen & Spieler Übersicht</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 30px;">NR</th>
+                        <th style="width: 200px;">Rolle</th>
+                        <th>Name des Spielers</th>
+                        <th style="width: 40px;">Tot</th>
+                        <th style="width: 170px;">Geschützt (Nacht 1–6)</th>
+                        <th style="width: 30px;"></th>
+                    </tr>
+                </thead>
+                <tbody id="player-table">
+                    <!-- Dynamischer Inhalt -->
+                </tbody>
+            </table>
+
+            <!-- Neue Rolle Hinzufügen -->
+            <div class="add-role-box">
+                <input type="text" id="new-role-name" placeholder="Neue Rolle" style="flex: 1;">
+                <label><input type="checkbox" id="new-role-wake"> Wacht auf (⚪)</label>
+                <label><input type="checkbox" id="new-role-wolf"> Werwolf</label>
+                <button class="btn" onclick="addRole()">+ Hinzufügen</button>
+            </div>
+
+            <div style="margin-top: 20px; display: flex; flex-direction: column; gap: 10px;">
+                <button class="btn-restart" onclick="restartRoundKeepRoles()">🔄 Neue Runde starten (Rollen behalten, Namen leeren)</button>
+                <button class="btn btn-danger" onclick="resetToDefault()">⚠️ Auf Standard-Bogen zurücksetzen</button>
+            </div>
+        </div>
+
+        <!-- Rechte Seite: Interaktive Phasensteuerung & Vorlese-Assistent -->
+        <div style="display: flex; flex-direction: column; gap: 20px;">
+            
+            <!-- Einstellungen für Rollenaufdeckung -->
+            <div class="card">
+                <h2>Regeln & Modus</h2>
+                <button id="toggle-reveal-btn" class="btn-mode" onclick="toggleRevealMode()">
+                    🎭 Rollen beim Tod aufdecken: NEIN (Geheimhaltung)
+                </button>
+            </div>
+
+            <!-- Phasen-Anzeige & Steuerung -->
+            <div class="card">
+                <h2 id="phase-title">🌙 Nacht 1</h2>
+
+                <!-- NACHT-PHASE (WIZARD / GEFÜHRT) -->
+                <div id="night-phase-ui" class="phase-box night-box">
+                    <div id="wizard-step-container">
+                        <!-- Wird dynamisch per JS befüllt -->
+                    </div>
+                </div>
+
+                <!-- TAG-PHASE -->
+                <div id="day-phase-ui" class="phase-box day-box" style="display: none;">
+                    <div id="night-result-summary" class="result-msg" style="margin-bottom: 15px;"></div>
+
+                    <span class="info-badge" id="voting-info">
+                        👥 Lebende Spieler: <strong>0</strong> | ⚖️ Nötige Stimmen zur Hinrichtung (≥ 50%): <strong>0</strong>
+                    </span>
+
+                    <h3>☀️ Nominierungen & Abstimmung</h3>
+
+                    <div id="nominations-container">
+                        <!-- Dynamische Nominierungszeilen -->
+                    </div>
+
+                    <button class="btn" onclick="addNominationRow()" style="background: #444; width: 100%; margin-top: 5px; margin-bottom: 15px;">+ Weitere Nominierung hinzufügen</button>
+
+                    <button class="btn-action btn-day" onclick="processDay()">☀️ Tag beenden &rarr; Zur nächsten Nacht</button>
+                </div>
+            </div>
+
+            <!-- Merker & Verliebte -->
+            <div class="card">
+                <h2>Merker & Verliebte</h2>
+                <div class="checklist-item"><input type="checkbox" id="m1" onchange="syncWitchPotions()"> <label for="m1" id="m1-label">Heiltrank verbraucht (Hexe)</label></div>
+                <div class="checklist-item"><input type="checkbox" id="m2" onchange="syncWitchPotions()"> <label for="m2" id="m2-label">Gifttrank verbraucht (Hexe)</label></div>
+                <div class="checklist-item"><input type="checkbox" id="m3"> <label for="m3">Der Alte hat 1. Angriff überlebt</label></div>
+                
+                <div style="margin-top: 15px; border-top: 1px solid var(--border-color); padding-top: 10px;">
+                    <label>💘 <strong>Verliebte Paare:</strong></label>
+                    <div class="lovers-container">
+                        <select id="lover-1" onchange="saveState()"><option value="">-- Partner 1 --</option></select>
+                        <select id="lover-2" onchange="saveState()"><option value="">-- Partner 2 --</option></select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Vor Nacht 1 -->
+            <div class="card">
+                <h2>Vor Nacht 1 Checkliste</h2>
+                <div class="checklist-item"><input type="checkbox" id="v1"> <label for="v1">Erzähler bestimmt</label></div>
+                <div class="checklist-item"><input type="checkbox" id="v2"> <label for="v2">Karten verteilt</label></div>
+                <div class="checklist-item"><input type="checkbox" id="v3"> <label for="v3">Alle sitzen im Kreis</label></div>
+                <div class="checklist-item"><input type="checkbox" id="v4"> <label for="v4">Amor & Verliebte erledigt</label></div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        const defaultRoles = [
+            { id: 1, role: "Amor (Nacht 1)", isWolf: false, wake: true, name: "", dead: false, protected: [] },
+            { id: 2, role: "Seher", isWolf: false, wake: true, name: "", dead: false, protected: [] },
+            { id: 3, role: "Leibwächter", isWolf: false, wake: true, name: "", dead: false, protected: [] },
+            { id: 4, role: "Werwolf", isWolf: true, wake: true, name: "", dead: false, protected: [] },
+            { id: 5, role: "Werwolf", isWolf: true, wake: true, name: "", dead: false, protected: [] },
+            { id: 6, role: "Werwolf", isWolf: true, wake: true, name: "", dead: false, protected: [] },
+            { id: 7, role: "Werwolf", isWolf: true, wake: true, name: "", dead: false, protected: [] },
+            { id: 8, role: "Hexe", isWolf: false, wake: true, name: "", dead: false, protected: [] },
+            { id: 9, role: "Jäger", isWolf: false, wake: false, name: "", dead: false, protected: [] },
+            { id: 10, role: "Der Alte", isWolf: false, wake: false, name: "", dead: false, protected: [] },
+            { id: 11, role: "Rostiger Ritter", isWolf: false, wake: false, name: "", dead: false, protected: [] },
+            { id: 12, role: "Dorfbewohner", isWolf: false, wake: false, name: "", dead: false, protected: [] },
+            { id: 13, role: "Dorfbewohner", isWolf: false, wake: false, name: "", dead: false, protected: [] },
+            { id: 14, role: "Dorfbewohner", isWolf: false, wake: false, name: "", dead: false, protected: [] },
+            { id: 15, role: "Dorfbewohner", isWolf: false, wake: false, name: "", dead: false, protected: [] },
+            { id: 16, role: "Dorfbewohner", isWolf: false, wake: false, name: "", dead: false, protected: [] }
+        ];
+
+        let roles = JSON.parse(localStorage.getItem('werwolf_roles')) || defaultRoles;
+        let revealRolesOnDeath = JSON.parse(localStorage.getItem('werwolf_reveal')) ?? false;
+        let currentNight = 1;
+        let isNightPhase = true;
+        let poisonedWolfIndex = null;
+        let nightWizardStep = 0; 
+
+        function renderTable() {
+            const tbody = document.getElementById('player-table');
+            tbody.innerHTML = '';
+
+            roles.forEach((p, index) => {
+                const tr = document.createElement('tr');
+                if (p.isWolf) tr.classList.add('werewolf');
+                if (p.dead) tr.classList.add('is-dead');
+
+                let nightBoxes = '';
+                for (let i = 1; i <= 6; i++) {
+                    const isChecked = p.protected && p.protected.includes(i) ? 'checked' : '';
+                    nightBoxes += `<input type="checkbox" ${isChecked} onchange="toggleProtect(${index}, ${i})" title="Nacht ${i} geschützt"> `;
+                }
+
+                tr.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td><input type="text" class="role-input" value="${p.role}" onchange="updateRoleName(${index}, this.value)"></td>
+                    <td><input type="text" value="${p.name || ''}" placeholder="Name..." onchange="updatePlayerName(${index}, this.value)"></td>
+                    <td style="text-align: center;"><input type="checkbox" ${p.dead ? 'checked' : ''} onchange="toggleDeadManual(${index})"></td>
+                    <td>${nightBoxes}</td>
+                    <td><button class="btn-delete" onclick="deleteRole(${index})" title="Löschen">🗑️</button></td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            updateDropdowns();
+            syncWitchPotions();
+            updateRevealBtnUI();
+            renderNightWizard();
+            checkGameOver();
+            saveState();
+        }
+
+        function toggleRevealMode() {
+            revealRolesOnDeath = !revealRolesOnDeath;
+            updateRevealBtnUI();
+            renderNightWizard();
+            saveState();
+        }
+
+        function updateRevealBtnUI() {
+            const btn = document.getElementById('toggle-reveal-btn');
+            if (!btn) return;
+            if (revealRolesOnDeath) {
+                btn.className = 'btn-mode active-reveal';
+                btn.innerHTML = '🎭 Rollen beim Tod aufdecken: JA (Klassisch)';
+            } else {
+                btn.className = 'btn-mode';
+                btn.innerHTML = '🎭 Rollen beim Tod aufdecken: NEIN (Geheimhaltung)';
+            }
+        }
+
+        function updateDropdowns() {
+            const standardSelects = document.querySelectorAll('#guard-target, #wolf-target, #witch-kill-target, .nomination-select');
+            const lover1Select = document.getElementById('lover-1');
+            const lover2Select = document.getElementById('lover-2');
+
+            const l1Val = lover1Select ? lover1Select.value : "";
+            const l2Val = lover2Select ? lover2Select.value : "";
+
+            if(lover1Select) lover1Select.innerHTML = '<option value="">-- Partner 1 --</option>';
+            if(lover2Select) lover2Select.innerHTML = '<option value="">-- Partner 2 --</option>';
+
+            standardSelects.forEach(s => {
+                const curVal = s.value;
+                s.innerHTML = '<option value="">-- Bitte wählen --</option>';
+                
+                roles.forEach((p, index) => {
+                    if (!p.dead) {
+                        const label = `${index + 1}. ${p.name ? p.name + ' (' + p.role + ')' : p.role}`;
+                        const opt = document.createElement('option');
+                        opt.value = index;
+                        opt.textContent = label;
+                        s.appendChild(opt);
+                    }
+                });
+                s.value = curVal;
+            });
+
+            roles.forEach((p, index) => {
+                const label = `${index + 1}. ${p.name ? p.name + ' (' + p.role + ')' : p.role} ${p.dead ? '(tot)' : ''}`;
+                
+                if(lover1Select) {
+                    const opt1 = document.createElement('option');
+                    opt1.value = index;
+                    opt1.textContent = label;
+                    lover1Select.appendChild(opt1);
+                }
+                if(lover2Select) {
+                    const opt2 = document.createElement('option');
+                    opt2.value = index;
+                    opt2.textContent = label;
+                    lover2Select.appendChild(opt2);
+                }
+            });
+
+            if(lover1Select) lover1Select.value = l1Val;
+            if(lover2Select) lover2Select.value = l2Val;
+
+            const aliveCount = roles.filter(r => !r.dead).length;
+            const requiredVotes = Math.ceil(aliveCount / 2);
+            document.getElementById('voting-info').innerHTML = 
+                `👥 Lebende Spieler: <strong>${aliveCount}</strong> | ⚖️ Nötige Stimmen zur Hinrichtung (≥ 50%): <strong>${requiredVotes}</strong>`;
+        }
+
+        // --- NACHT WIZARD ---
+        function renderNightWizard() {
+            if (!isNightPhase) return;
+            const container = document.getElementById('wizard-step-container');
+            
+            const guard = roles.find(r => r.role.toLowerCase().includes('leibwächter'));
+            const isGuardDead = guard && guard.dead;
+
+            const seer = roles.find(r => r.role.toLowerCase().includes('seher'));
+            const isSeerDead = seer && seer.dead;
+
+            const witch = roles.find(r => r.role.toLowerCase().includes('hexe'));
+            const isWitchDead = witch && witch.dead;
+
+            let html = "";
+
+            if (nightWizardStep === 0) {
+                if (currentNight === 1) {
+                    html = `
+                        <h3>1/5: Amor & Verliebte (Nur Nacht 1)</h3>
+                        <div class="script-box">„Amor, wache auf. Zeige auf zwei Spieler, die sich ineinander verlieben sollen. (...) Amor, schlafe wieder ein.“</div>
+                        <div class="script-box" style="margin-top: 10px; border-left-color: var(--heart-pink);">„Ich berühre nun die beiden Verliebten an der Schulter. Verliebte, wacht auf, erkennt einander und schlaft wieder ein.“</div>
+                        <p style="font-size: 0.9rem; color: #aaa;">Tippe als Spielleiter die zwei gewählten Spieler an der Schulter an und trage sie unten im Bereich „Merker & Verliebte“ ein.</p>
+                        <button class="btn-action btn-night" onclick="nextWizardStep()">Weiter zur Seherin &rarr;</button>
+                    `;
+                } else {
+                    nightWizardStep = 1;
+                    renderNightWizard();
+                    return;
+                }
+            } else if (nightWizardStep === 1) {
+                if (revealRolesOnDeath && isSeerDead) {
+                    html = `
+                        <h3>Seherin (Bereits tot)</h3>
+                        <div class="script-box">Die Seherin ist tot und schläft durch.</div>
+                        <button class="btn-action btn-night" onclick="nextWizardStep()">Weiter zum Leibwächter &rarr;</button>
+                    `;
+                } else {
+                    html = `
+                        <h3>Seherin</h3>
+                        <div class="script-box">„Die Seherin, wache auf. Zeige mir einen Spieler, dessen wahre Identität du wissen möchtest.“</div>
+                        <p style="font-size: 0.9rem; color: #aaa;">${isSeerDead ? '⚠️ Seherin ist tot: Vorlesetext laut vorlesen, aber Aktion übergehen (Täuschung!).' : 'Zeige der Seherin heimlich die Karte des gewählten Spielers.'}</p>
+                        <button class="btn-action btn-night" onclick="nextWizardStep()">Weiter zum Leibwächter &rarr;</button>
+                    `;
+                }
+            } else if (nightWizardStep === 2) {
+                if (revealRolesOnDeath && isGuardDead) {
+                    html = `
+                        <h3>Leibwächter (Bereits tot)</h3>
+                        <div class="script-box">Der Leibwächter ist tot und schläft diese Nacht durch.</div>
+                        <button class="btn-action btn-night" onclick="nextWizardStep()">Weiter zu den Werwölfen &rarr;</button>
+                    `;
+                } else {
+                    html = `
+                        <h3>Leibwächter</h3>
+                        <div class="script-box">„Der Leibwächter, wache auf. Wähle eine Person aus, die du in dieser Nacht vor den Werwölfen beschützen möchtest. Leibwächter, schlafe wieder ein.“</div>
+                        <label><strong>Wähle die beschützte Person:</strong></label>
+                        <select id="wizard-guard-target" ${isGuardDead ? 'disabled' : ''}><option value="">-- ${isGuardDead ? 'Leibwächter tot (kein Schutz)' : 'Niemanden beschützt'} --</option></select>
+                        <button class="btn-action btn-night" onclick="saveWizardGuard(); nextWizardStep();">Bestätigen & Weiter &rarr;</button>
+                    `;
+                }
+            } else if (nightWizardStep === 3) {
+                html = `
+                    <h3>Werwölfe</h3>
+                    <div class="script-box">„Die Werwölfe, wache auf. Erkennt euch und wählt gemeinsam ein Opfer aus, das ihr fressen wollt. Zeigt schweigend auf euer Ziel.“</div>
+                    <label><strong>Wähle das Opfer der Werwölfe:</strong></label>
+                    <select id="wizard-wolf-target"><option value="">-- Keines (oder uneinig) --</option></select>
+                    <button class="btn-action btn-night" onclick="saveWizardWolf(); nextWizardStep();">Bestätigen & Weiter &rarr;</button>
+                `;
+            } else if (nightWizardStep === 4) {
+                if (revealRolesOnDeath && isWitchDead) {
+                    html = `
+                        <h3>Hexe (Bereits tot)</h3>
+                        <div class="script-box">Die Hexe ist tot und kann nicht mehr eingreifen.</div>
+                        <button class="btn-action btn-danger" onclick="finishNightWizard()" style="background: var(--accent-red);">Nacht auswerten &rarr; Zum Tag</button>
+                    `;
+                } else {
+                    const wolfChoiceVal = document.getElementById('wizard-wolf-target') ? document.getElementById('wizard-wolf-target').value : "";
+                    let victimText = "Niemand wurde von den Werwölfen angegriffen.";
+                    if (wolfChoiceVal !== "") {
+                        const v = roles[parseInt(wolfChoiceVal)];
+                        victimText = `Das Opfer der Werwölfe ist: <strong>${v.name ? v.name + ' (' + v.role + ')' : v.role}</strong>`;
+                    }
+
+                    const healUsed = document.getElementById('m1').checked;
+                    const killUsed = document.getElementById('m2').checked;
+
+                    html = `
+                        <h3>Hexe</h3>
+                        <div class="script-box">„Die Hexe, wache auf. Dieser Spieler wurde von den Werwölfen angegriffen (zeige auf das Opfer). Möchtest du ihn heilen? Möchtest du jemanden vergiften? Hexe, schlafe wieder ein.“</div>
+                        
+                        <div style="background: #1a1a1a; padding: 10px; border-radius: 4px; margin-top: 10px; margin-bottom: 10px;">
+                            <p style="margin: 0 0 8px 0; font-size: 0.9rem;">${healUsed || isWitchDead ? '❌ Heiltrank ist NICHT verfügbar.' : '🧪 ' + victimText}</p>
+                            <label><input type="checkbox" id="wizard-witch-heal" ${healUsed || isWitchDead ? 'disabled' : ''}> Ja, Opfer heilen</label>
+                        </div>
+
+                        <div style="background: #1a1a1a; padding: 10px; border-radius: 4px; margin-bottom: 15px;">
+                            <p style="margin: 0 0 8px 0; font-size: 0.9rem;">${killUsed || isWitchDead ? '❌ Gifttrank ist NICHT verfügbar.' : '☠️ Möchtest du den Gifttrank einsetzen?'}</p>
+                            <label><input type="checkbox" id="wizard-witch-kill" onchange="toggleWizardWitchKill()" ${killUsed || isWitchDead ? 'disabled' : ''}> Ja, jemanden vergiften</label>
+                            <select id="wizard-witch-kill-target" style="display: none; margin-top: 8px;"><option value="">-- Gifttrank-Opfer wählen --</option></select>
+                        </div>
+
+                        <button class="btn-action btn-danger" onclick="finishNightWizard()" style="background: var(--accent-red);">Nacht auswerten &rarr; Zum Tag</button>
+                    `;
+                }
+            }
+
+            container.innerHTML = html;
+
+            if (nightWizardStep === 2 && (!isGuardDead || !revealRolesOnDeath)) {
+                populateWizardSelect('wizard-guard-target');
+            } else if (nightWizardStep === 3) {
+                populateWizardSelect('wizard-wolf-target');
+            } else if (nightWizardStep === 4 && (!isWitchDead || !revealRolesOnDeath)) {
+                populateWizardSelect('wizard-witch-kill-target');
+            }
+        }
+
+        function populateWizardSelect(elementId) {
+            const select = document.getElementById(elementId);
+            if (!select) return;
+            const curVal = select.value;
+            select.innerHTML = '<option value="">-- Bitte wählen --</option>';
+            roles.forEach((p, index) => {
+                if (!p.dead) {
+                    const label = `${index + 1}. ${p.name ? p.name + ' (' + p.role + ')' : p.role}`;
+                    const opt = document.createElement('option');
+                    opt.value = index;
+                    opt.textContent = label;
+                    select.appendChild(opt);
+                }
+            });
+            select.value = curVal;
+        }
+
+        function nextWizardStep() {
+            nightWizardStep++;
+            renderNightWizard();
+        }
+
+        function saveWizardGuard() {
+            const sel = document.getElementById('wizard-guard-target');
+            if (sel && sel.value !== "" && !sel.disabled) {
+                const gIdx = parseInt(sel.value);
+                if (!roles[gIdx].protected) roles[gIdx].protected = [];
+                if (!roles[gIdx].protected.includes(currentNight)) {
+                    roles[gIdx].protected.push(currentNight);
+                }
+            }
+        }
+
+        function saveWizardWolf() {
+            const sel = document.getElementById('wizard-wolf-target');
+            if (sel) {
+                document.getElementById('wolf-target').value = sel.value;
+            }
+        }
+
+        function toggleWizardWitchKill() {
+            const isChecked = document.getElementById('wizard-witch-kill').checked;
+            const select = document.getElementById('wizard-witch-kill-target');
+            select.style.display = isChecked ? 'block' : 'none';
+        }
+
+        function finishNightWizard() {
+            const witchHealCb = document.getElementById('wizard-witch-heal');
+            const witchKillCb = document.getElementById('wizard-witch-kill');
+            const witchKillTargetSel = document.getElementById('wizard-witch-kill-target');
+
+            const witchHeal = witchHealCb ? witchHealCb.checked : false;
+            const witchKill = witchKillCb ? witchKillCb.checked : false;
+            const witchKillTarget = witchKillTargetSel ? witchKillTargetSel.value : "";
+
+            const wolfIndex = document.getElementById('wolf-target').value;
+            const summaryDiv = document.getElementById('night-result-summary');
+            const oldOneOverlived = document.getElementById('m3').checked;
+
+            let newlyDeadIndex = null;
+            let witchDeadIndex = null;
+            let resultText = "";
+
+            if (poisonedWolfIndex !== null && !roles[poisonedWolfIndex].dead) {
+                roles[poisonedWolfIndex].dead = true;
+                const pWolfName = roles[poisonedWolfIndex].name ? roles[poisonedWolfIndex].name : roles[poisonedWolfIndex].role;
+                resultText += `<br>🤢 **Rostiger-Ritter-Effekt:** Werwolf ${pWolfName} ist an der Wundinfektion gestorben!`;
+                checkLoversDeath(poisonedWolfIndex);
+                checkHunterDeath(poisonedWolfIndex);
+                poisonedWolfIndex = null;
+            }
+
+            if (witchKill && witchKillTarget !== "") {
+                const kIdx = parseInt(witchKillTarget);
+                const killedName = roles[kIdx].name ? roles[kIdx].name : roles[kIdx].role;
+                witchDeadIndex = kIdx;
+                document.getElementById('m2').checked = true;
+                resultText += `<br>🧪 **Gifttrank:** ${killedName} wurde von der Hexe vergiftet und ist tot!`;
+            }
+
+            if (wolfIndex === "") {
+                resultText = "☀️ **Ergebnis der Nacht:** Die Werwölfe haben kein Opfer gewählt." + resultText;
+            } else {
+                const wIdx = parseInt(wolfIndex);
+                const victimName = roles[wIdx].name ? roles[wIdx].name : roles[wIdx].role;
+
+                let isProtected = false;
+                roles.forEach(r => {
+                    if (r.protected && r.protected.includes(currentNight) && roles.indexOf(r) === wIdx) {
+                        isProtected = true;
+                    }
+                });
+
+                const isOldOne = roles[wIdx].role.toLowerCase().includes('der alte');
+
+                if (isProtected) {
+                    resultText = `🛡️ **Ergebnis der Nacht:** ${victimName} wurde vom **Leibwächter** beschützt!` + resultText;
+                } else if (witchHeal) {
+                    resultText = `🧪 **Ergebnis der Nacht:** ${victimName} wurde von der **Hexe** geheilt!` + resultText;
+                    document.getElementById('m1').checked = true;
+                } else if (isOldOne && !oldOneOverlived) {
+                    resultText = `🛡️ **Ergebnis der Nacht:** ${victimName} wurde angegriffen, hat aber dank seines Extralebens **überlebt**!` + resultText;
+                    document.getElementById('m3').checked = true;
+                } else {
+                    resultText = `💀 **Ergebnis der Nacht:** ${victimName} wurde von den Werwölfen gefressen!` + resultText;
+                    newlyDeadIndex = wIdx;
+                }
+            }
+
+            summaryDiv.className = (newlyDeadIndex !== null || witchDeadIndex !== null) ? "result-msg result-dead" : "result-msg result-success";
+            summaryDiv.innerHTML = resultText;
+
+            isNightPhase = false;
+            document.getElementById('phase-title').innerText = `☀️ Tag ${currentNight}`;
+            document.getElementById('night-phase-ui').style.display = 'none';
+            document.getElementById('day-phase-ui').style.display = 'block';
+
+            document.getElementById('nominations-container').innerHTML = '';
+            addNominationRow();
+            addNominationRow();
+
+            document.getElementById('wolf-target').value = "";
+
+            if (newlyDeadIndex !== null) {
+                killPlayerWithTriggers(newlyDeadIndex, true);
+            }
+            if (witchDeadIndex !== null) {
+                killPlayerWithTriggers(witchDeadIndex, false);
+            }
+
+            renderTable();
+        }
+
+        function processDay() {
+            const aliveCount = roles.filter(r => !r.dead).length;
+            const requiredVotes = Math.ceil(aliveCount / 2);
+
+            const selectElements = document.querySelectorAll('.nomination-select');
+            const voteInputs = document.querySelectorAll('.nomination-votes');
+
+            let candidates = [];
+            selectElements.forEach((sel, i) => {
+                if (sel.value !== "") {
+                    const votes = parseInt(voteInputs[i].value) || 0;
+                    candidates.push({ index: parseInt(sel.value), votes: votes });
+                }
+            });
+
+            let newlyDeadIndex = null;
+
+            if (candidates.length > 0) {
+                candidates.sort((a, b) => b.votes - a.votes);
+                const winner = candidates[0];
+                const hasTie = candidates.length > 1 && candidates[1].votes === winner.votes;
+
+                if (winner.votes >= requiredVotes && !hasTie) {
+                    newlyDeadIndex = winner.index;
+                    const deadName = roles[winner.index].name ? roles[winner.index].name : roles[winner.index].role;
+                    alert(`⚖️ Hinrichtung erfolgreich!\n\n${deadName} hat ${winner.votes} von benötigten ${requiredVotes} Stimmen erhalten und wurde hingerichtet.`);
+                } else if (hasTie) {
+                    alert(`⚖️ Stimmengleichstand (${winner.votes} Stimmen)! Niemand wird hingerichtet.`);
+                } else {
+                    alert(`⚖️ Keine ausreichende Mehrheit!\n\nDer Meistgestimmte hatte nur ${winner.votes} Stimmen (benötigt: ${requiredVotes}). Niemand wird hingerichtet.`);
+                }
+            }
+
+            if (newlyDeadIndex !== null) {
+                killPlayerWithTriggers(newlyDeadIndex, false);
+            }
+
+            currentNight++;
+            isNightPhase = true;
+            nightWizardStep = 0;
+            document.getElementById('phase-title').innerText = `🌙 Nacht ${currentNight}`;
+            document.getElementById('day-phase-ui').style.display = 'none';
+            document.getElementById('night-phase-ui').style.display = 'block';
+
+            renderTable();
+        }
+
+        // --- SIEGERERKENNUNG ---
+        function checkGameOver() {
+            const alive = roles.filter(r => !r.dead);
+            const aliveWolves = alive.filter(r => r.isWolf);
+            const aliveVillagers = alive.filter(r => !r.isWolf);
+
+            const l1Val = document.getElementById('lover-1') ? document.getElementById('lover-1').value : "";
+            const l2Val = document.getElementById('lover-2') ? document.getElementById('lover-2').value : "";
+
+            let isMixedLoversAlive = false;
+            if (l1Val !== "" && l2Val !== "") {
+                const idx1 = parseInt(l1Val);
+                const idx2 = parseInt(l2Val);
+                const p1 = roles[idx1];
+                const p2 = roles[idx2];
+
+                if (p1 && p2 && !p1.dead && !p2.dead) {
+                    if ((p1.isWolf && !p2.isWolf) || (!p1.isWolf && p2.isWolf)) {
+                        isMixedLoversAlive = true;
+                    }
+                }
+            }
+
+            const banner = document.getElementById('game-over-container');
+
+            if (isMixedLoversAlive && alive.length === 2) {
+                banner.style.display = 'block';
+                banner.className = 'game-over-banner';
+                banner.innerHTML = `
+                    <h2>💘 DAS VERLIEBTE PAAR GEWINNT! 💘</h2>
+                    <p>Liebe besiegt alles! Der Werwolf und der Dorfbewohner haben überlebt.</p>
+                `;
+                return;
+            }
+
+            if (aliveWolves.length === 0 && roles.length > 0) {
+                banner.style.display = 'block';
+                banner.className = 'game-over-banner';
+                banner.innerHTML = `
+                    <h2>🧑‍🌾 DAS DORF GEWINNT! 🧑‍🌾</h2>
+                    <p>Alle Werwölfe wurden erfolgreich vernichtet!</p>
+                `;
+                return;
+            }
+
+            const hasHunterAlive = aliveVillagers.some(r => r.role.toLowerCase().includes('jäger'));
+            const hasKnightAlive = aliveVillagers.some(r => r.role.toLowerCase().includes('rostiger ritter'));
+            const witchKillAvailable = !document.getElementById('m2').checked && aliveVillagers.some(r => r.role.toLowerCase().includes('hexe'));
+
+            const villageHasLethalAction = hasHunterAlive || hasKnightAlive || witchKillAvailable;
+
+            if (aliveWolves.length > aliveVillagers.length || (aliveWolves.length === aliveVillagers.length && !villageHasLethalAction && aliveWolves.length > 0)) {
+                banner.style.display = 'block';
+                banner.className = 'game-over-banner';
+                banner.innerHTML = `
+                    <h2>🐺 DIE WERWÖLFE GEWINNEN! 🐺</h2>
+                    <p>Die Werwölfe haben die Übermacht übernommen und das Dorf hat keine Konter-Aktionen mehr!</p>
+                `;
+                return;
+            }
+
+            banner.style.display = 'none';
+        }
+
+        function checkLoversDeath(deadPlayerIndex) {
+            const l1 = document.getElementById('lover-1').value;
+            const l2 = document.getElementById('lover-2').value;
+
+            if (l1 === "" || l2 === "") return;
+
+            let partnerIndex = null;
+            if (parseInt(l1) === deadPlayerIndex) {
+                partnerIndex = parseInt(l2);
+            } else if (parseInt(l2) === deadPlayerIndex) {
+                partnerIndex = parseInt(l1);
+            }
+
+            if (partnerIndex !== null && !roles[partnerIndex].dead) {
+                roles[partnerIndex].dead = true;
+                const partnerName = roles[partnerIndex].name ? roles[partnerIndex].name : roles[partnerIndex].role;
+                alert(`💘 Da sein/ihr:r Partner:in gestorben ist, bricht das Herz von ${partnerName}! Er/Sie stirbt aus Liebeskummer ebenfalls.`);
+                
+                checkHunterDeath(partnerIndex);
+                checkRustyKnightDeath(partnerIndex, true);
+                checkLoversDeath(partnerIndex);
+            }
+        }
+
+        function checkHunterDeath(deadPlayerIndex) {
+            const deadPlayer = roles[deadPlayerIndex];
+            if (deadPlayer && deadPlayer.role.toLowerCase().includes('jäger')) {
+                let aliveTargets = roles.map((p, idx) => ({ ...p, originalIndex: idx })).filter(p => !p.dead && p.originalIndex !== deadPlayerIndex);
+                if (aliveTargets.length === 0) return;
+
+                let optionsText = aliveTargets.map(p => `${p.originalIndex + 1}: ${p.name ? p.name + ' (' + p.role + ')' : p.role}`).join('\n');
+                let targetInput = prompt(`🎯 DER JÄGER IST GESTORBEN!\n\nGib die Nummer des Spielers ein, den der Jäger erschießen soll:\n\n${optionsText}`);
+
+                if (targetInput !== null) {
+                    let chosenNum = parseInt(targetInput) - 1;
+                    if (!isNaN(chosenNum) && roles[chosenNum] && !roles[chosenNum].dead) {
+                        roles[chosenNum].dead = true;
+                        const shotName = roles[chosenNum].name ? roles[chosenNum].name : roles[chosenNum].role;
+                        alert(`💥 Der Jäger hat ${shotName} erschossen!`);
+                        checkRustyKnightDeath(chosenNum, false);
+                        checkLoversDeath(chosenNum);
+                        checkHunterDeath(chosenNum);
+                    } else if (targetInput.trim() !== "") {
+                        alert("Ungültige Nummer gewählt. Niemand sonst wurde erschossen.");
+                    }
+                }
+            }
+        }
+
+        function checkRustyKnightDeath(deadPlayerIndex, killedByWolves) {
+            const deadPlayer = roles[deadPlayerIndex];
+            if (deadPlayer && deadPlayer.role.toLowerCase().includes('rostiger ritter') && killedByWolves) {
+                let wolves = roles.map((p, idx) => ({ ...p, originalIndex: idx })).filter(p => p.isWolf && !p.dead);
+                if (wolves.length === 0) return;
+
+                let optionsText = wolves.map(p => `${p.originalIndex + 1}: ${p.name ? p.name + ' (' + p.role + ')' : p.role}`).join('\n');
+                let targetInput = prompt(`🛡️ DER ROSTIGE RITTER WURDE GEFRESSEN!\n\nWelcher Werwolf sitzt LINKS vom Rostigen Ritter? Gib seine Nummer ein:\n\n${optionsText}`);
+
+                if (targetInput !== null) {
+                    let chosenNum = parseInt(targetInput) - 1;
+                    if (!isNaN(chosenNum) && roles[chosenNum] && roles[chosenNum].isWolf) {
+                        poisonedWolfIndex = chosenNum;
+                        const wolfName = roles[chosenNum].name ? roles[chosenNum].name : roles[chosenNum].role;
+                        alert(`🤢 ${wolfName} wurde durch das rostige Schwert infiziert/vergiftet! Er wird in der NÄCHSTEN Nacht sterben.`);
+                    }
+                }
+            }
+        }
+
+        function killPlayerWithTriggers(index, killedByWolves = false) {
+            if (roles[index].dead) return;
+            roles[index].dead = true;
+            checkRustyKnightDeath(index, killedByWolves);
+            checkLoversDeath(index);
+            checkHunterDeath(index);
+        }
+
+        function toggleDeadManual(index) {
+            const isNowDead = !roles[index].dead;
+            if (isNowDead) {
+                killPlayerWithTriggers(index, false);
+            } else {
+                roles[index].dead = false;
+            }
+            renderTable();
+        }
+
+        function addNominationRow() {
+            const container = document.getElementById('nominations-container');
+            const div = document.createElement('div');
+            div.className = 'nomination-row';
+            div.innerHTML = `
+                <select class="nomination-select" style="flex: 2;"><option value="">-- Nominiert --</option></select>
+                <input type="number" class="nomination-votes" placeholder="Stimmen" min="0" style="flex: 1;">
+                <button class="btn-delete" onclick="this.parentElement.remove()" style="margin-bottom: 10px;">🗑️</button>
+            `;
+            container.appendChild(div);
+            updateDropdowns();
+        }
+
+        function updateRoleName(index, val) { roles[index].role = val; saveState(); }
+        function updatePlayerName(index, val) { roles[index].name = val; updateDropdowns(); saveState(); }
+
+        function toggleProtect(roleIndex, nightNum) {
+            if (!roles[roleIndex].protected) roles[roleIndex].protected = [];
+            const pos = roles[roleIndex].protected.indexOf(nightNum);
+            if (pos === -1) { roles[roleIndex].protected.push(nightNum); } 
+            else { roles[roleIndex].protected.splice(pos, 1); }
+            saveState();
+        }
+
+        function syncWitchPotions() {
+            const healUsed = document.getElementById('m1').checked;
+            const killUsed = document.getElementById('m2').checked;
+            const healLabel = document.getElementById('m1-label');
+            const killLabel = document.getElementById('m2-label');
+
+            if (healUsed) healLabel.className = "disabled-label";
+            else healLabel.className = "";
+
+            if (killUsed) killLabel.className = "disabled-label";
+            else killLabel.className = "";
+        }
+
+        function addRole() {
+            const nameInput = document.getElementById('new-role-name');
+            const wakeInput = document.getElementById('new-role-wake');
+            const wolfInput = document.getElementById('new-role-wolf');
+
+            if (!nameInput.value.trim()) return;
+
+            let roleName = nameInput.value.trim();
+            if (wakeInput.checked && !roleName.startsWith('⚪')) { roleName = '⚪ ' + roleName; }
+
+            roles.push({
+                id: Date.now(),
+                role: roleName,
+                isWolf: wolfInput.checked,
+                wake: wakeInput.checked,
+                name: "",
+                dead: false,
+                protected: []
+            });
+
+            nameInput.value = '';
+            wakeInput.checked = false;
+            wolfInput.checked = false;
+            renderTable();
+        }
+
+        function deleteRole(index) { roles.splice(index, 1); renderTable(); }
+
+        function restartRoundKeepRoles() {
+            if (confirm("Möchtest du die Runde neustarten? (Alle Rollen bleiben erhalten, aber die Namen & Spielstände werden geleert)")) {
+                roles.forEach(r => {
+                    r.dead = false;
+                    r.name = "";
+                    r.protected = [];
+                });
+                currentNight = 1;
+                isNightPhase = true;
+                nightWizardStep = 0;
+                poisonedWolfIndex = null;
+                document.getElementById('phase-title').innerText = `🌙 Nacht 1`;
+                document.getElementById('day-phase-ui').style.display = 'none';
+                document.getElementById('night-phase-ui').style.display = 'block';
+                document.getElementById('lover-1').value = "";
+                document.getElementById('lover-2').value = "";
+                document.getElementById('m1').checked = false;
+                document.getElementById('m2').checked = false;
+                document.getElementById('m3').checked = false;
+                renderTable();
+            }
+        }
+
+        function resetToDefault() {
+            if (confirm("Möchtest du wirklich den gesamten Bogen auf Werkseinstellungen zurücksetzen?")) {
+                roles = JSON.parse(JSON.stringify(defaultRoles));
+                currentNight = 1;
+                isNightPhase = true;
+                nightWizardStep = 0;
+                poisonedWolfIndex = null;
+                revealRolesOnDeath = false;
+                document.getElementById('phase-title').innerText = `🌙 Nacht 1`;
+                document.getElementById('day-phase-ui').style.display = 'none';
+                document.getElementById('night-phase-ui').style.display = 'block';
+                document.getElementById('lover-1').value = "";
+                document.getElementById('lover-2').value = "";
+                document.getElementById('m1').checked = false;
+                document.getElementById('m2').checked = false;
+                document.getElementById('m3').checked = false;
+                renderTable();
+            }
+        }
+
+        function saveState() {
+            localStorage.setItem('werwolf_roles', JSON.stringify(roles));
+            localStorage.setItem('werwolf_reveal', JSON.stringify(revealRolesOnDeath));
+        }
+
+        const hiddenWolfInput = document.createElement('input');
+        hiddenWolfInput.type = 'hidden';
+        hiddenWolfInput.id = 'wolf-target';
+        document.body.appendChild(hiddenWolfInput);
+
+        window.onload = renderTable;
+    </script>
+</body>
+</html>
