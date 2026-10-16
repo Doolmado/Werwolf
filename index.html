@@ -737,6 +737,8 @@
                 roles[poisonedWolfIndex].dead = true;
                 const pWolfName = roles[poisonedWolfIndex].name ? roles[poisonedWolfIndex].name : roles[poisonedWolfIndex].role;
                 resultText += `<br>🤢 **Rostiger-Ritter-Effekt:** Werwolf ${pWolfName} ist an der Wundinfektion gestorben!`;
+                
+                renderTable();
                 checkLoversDeath(poisonedWolfIndex);
                 checkHunterDeath(poisonedWolfIndex);
                 poisonedWolfIndex = null;
@@ -793,14 +795,15 @@
 
             document.getElementById('wolf-target').value = "";
 
+            // Tabelle aktualisieren, BEVOR Triggereffekte (Liebeskummer/Jäger) greifen und Popups öffnen
+            renderTable();
+
             if (newlyDeadIndex !== null) {
                 killPlayerWithTriggers(newlyDeadIndex, true);
             }
             if (witchDeadIndex !== null) {
                 killPlayerWithTriggers(witchDeadIndex, false);
             }
-
-            renderTable();
         }
 
         function processDay() {
@@ -928,9 +931,16 @@
             }
 
             if (partnerIndex !== null && !roles[partnerIndex].dead) {
+                const deadPlayer = roles[deadPlayerIndex];
+                const deadPlayerName = deadPlayer.name ? `${deadPlayer.name} (${deadPlayer.role})` : deadPlayer.role;
+
                 roles[partnerIndex].dead = true;
-                const partnerName = roles[partnerIndex].name ? roles[partnerIndex].name : roles[partnerIndex].role;
-                alert(`💘 Da sein/ihr:r Partner:in gestorben ist, bricht das Herz von ${partnerName}! Er/Sie stirbt aus Liebeskummer ebenfalls.`);
+                const partnerName = roles[partnerIndex].name ? `${roles[partnerIndex].name} (${roles[partnerIndex].role})` : roles[partnerIndex].role;
+                
+                // Tabelle aktualisieren, damit der Partner als tot markiert in der Tabelle steht, bevor der Alert erscheint
+                renderTable();
+
+                alert(`💘 Liebeskummer-Tod!\n\nDa der/die Partner/in ${deadPlayerName} gestorben ist, bricht das Herz von ${partnerName}! Er/Sie stirbt ebenfalls aus Liebeskummer.`);
                 
                 checkHunterDeath(partnerIndex);
                 checkRustyKnightDeath(partnerIndex, true);
@@ -951,6 +961,7 @@
                     let chosenNum = parseInt(targetInput) - 1;
                     if (!isNaN(chosenNum) && roles[chosenNum] && !roles[chosenNum].dead) {
                         roles[chosenNum].dead = true;
+                        renderTable(); // Tabelle aktualisieren
                         const shotName = roles[chosenNum].name ? roles[chosenNum].name : roles[chosenNum].role;
                         alert(`💥 Der Jäger hat ${shotName} erschossen!`);
                         checkRustyKnightDeath(chosenNum, false);
@@ -986,6 +997,10 @@
         function killPlayerWithTriggers(index, killedByWolves = false) {
             if (roles[index].dead) return;
             roles[index].dead = true;
+            
+            // WICHTIG: Tabelle erst rendern, damit der primäre Tote (z.B. aus der Nacht) sofort durchgestrichen in der Tabelle zu sehen ist
+            renderTable();
+
             checkRustyKnightDeath(index, killedByWolves);
             checkLoversDeath(index);
             checkHunterDeath(index);
@@ -997,8 +1012,8 @@
                 killPlayerWithTriggers(index, false);
             } else {
                 roles[index].dead = false;
+                renderTable();
             }
-            renderTable();
         }
 
         function addNominationRow() {
